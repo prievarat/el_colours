@@ -171,7 +171,7 @@
       <div class="canvas" id="canvas"></div>
     </section>
 
-    <!-- Order Panel (NEW) -->
+    <!-- Order Panel -->
     <section class="panel" role="tabpanel" id="panel-order" aria-labelledby="tab-order" hidden>
       <div class="controls">
         <button class="btn" id="orderShuffle">Shuffle grid</button>
@@ -210,7 +210,7 @@
   const COLOURS = [
     {name:"red",    hex:"#ef4444"},
     {name:"blue",   hex:"#3b82f6"},
-    {name:"yellow", hex:"#f59e0b"},
+    {name:"yellow", hex:"#F7FF00"},  // ← LEMON YELLOW (brighter, greener)
     {name:"green",  hex:"#22c55e"},
     {name:"orange", hex:"#fb923c"},
     {name:"purple", hex:"#8b5cf6"},
@@ -305,7 +305,7 @@
   byId('showAll').onclick=()=>{ learnGrid.querySelectorAll('.label').forEach(l=>{ l.dataset.visible='true'; l.classList.remove('hidden'); }); sfx('click'); };
   byId('hideAll').onclick=()=>{ learnGrid.querySelectorAll('.label').forEach(l=>{ l.dataset.visible='false'; l.classList.add('hidden'); }); sfx('click'); };
 
-  // ===== FIND (big tiles, no labels; prompt shows name) =====
+  // ===== FIND =====
   const findRows=byId('findRows'), promptEl=byId('prompt'), scoreEl=byId('score');
   let queue=[], score=0, target=null;
 
@@ -344,7 +344,7 @@
   nextRound();
   byId('restartFind').onclick=()=>{ queue=[]; teacherStats.findCurrentStreak=0; nextRound(); toast('Restarted'); sfx('click'); updateStats(); };
 
-  // ===== COLOURING (dots only, no names) =====
+  // ===== COLOURING =====
   const palette=byId('palette'), canvas=byId('canvas'); let activeColour=COLOURS[0];
   function drawPalette(){
     palette.innerHTML='';
@@ -384,15 +384,15 @@
   drawCanvas();
   byId('resetCanvas').onclick=()=>{ canvas.querySelectorAll('g').forEach(g=>g.setAttribute('fill','#e5e7eb')); teacherStats.colouredCount=0; updateStats(); sfx('click'); };
 
-  // ===== ORDER (Drag & Drop) =====
+  // ===== ORDER =====
   const orderGrid=byId('orderGrid'), orderShow=byId('orderShow'), orderHide=byId('orderHide'), orderShuffle=byId('orderShuffle'), orderReset=byId('orderReset');
   const targetBox=byId('targetBox'), targetLen=byId('targetLen'), orderPalette=byId('orderPalette');
   const recToggle=byId('recToggle'), recUndo=byId('recUndo'), recClear=byId('recClear'), recRandom=byId('recRandom'), recFromGrid=byId('recFromGrid'), checkOrderBtn=byId('checkOrder');
 
-  let orderNames = COLOURS.map(c=>c.name); // current grid order (names)
+  let orderNames = COLOURS.map(c=>c.name);
   let showNames = true;
   let recording = false;
-  let targetSeq = []; // array of names
+  let targetSeq = [];
 
   function drawOrderPalette(){
     orderPalette.innerHTML='';
@@ -429,7 +429,6 @@
       const sw=document.createElement('div'); sw.className='swatch big'; sw.style.background=c.hex; sw.style.color=textOn(c.hex); sw.textContent=" ";
       const lab=document.createElement('div'); lab.className='label'; lab.textContent=name; if(!showNames) lab.classList.add('hidden');
       tile.append(sw,lab);
-      // drag events
       tile.addEventListener('dragstart', e=>{ tile.classList.add('dragging'); e.dataTransfer.setData('text/plain', idx.toString()); });
       tile.addEventListener('dragend', ()=>{ tile.classList.remove('dragging'); });
       tile.addEventListener('dragover', e=>{ e.preventDefault(); });
@@ -467,7 +466,6 @@
 
   function resetHighlights(){ orderGrid.querySelectorAll('.tile').forEach(t=>t.classList.remove('correct','wrong')); }
 
-  // Controls
   orderShow.onclick=()=>{ showNames=true; orderGrid.querySelectorAll('.label').forEach(l=>l.classList.remove('hidden')); sfx('click'); };
   orderHide.onclick=()=>{ showNames=false; orderGrid.querySelectorAll('.label').forEach(l=>l.classList.add('hidden')); sfx('click'); };
   orderShuffle.onclick=()=>{ orderNames = shuffle(orderNames); resetHighlights(); drawOrderGrid(); sfx('click'); };
@@ -490,7 +488,7 @@
   drawTarget();
   drawOrderGrid();
 
-  // ===== Keyboard quick-select in Colouring: 1–0 (silent label) =====
+  // Keyboard quick-select in Colouring: 1–0
   window.addEventListener('keydown', (e)=>{
     const map={'1':0,'2':1,'3':2,'4':3,'5':4,'6':5,'7':6,'8':7,'9':8,'0':9};
     if(map.hasOwnProperty(e.key)){
